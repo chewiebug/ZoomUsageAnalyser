@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
 
+import exif_handler
+
 
 class CliArgs(object):
     """ Contains all properties parsed from cli """
@@ -28,7 +30,11 @@ def parse_args() -> CliArgs:
 def traverse_directory(directory: str):
     p = Path(directory)
     if p.exists():
-        print([x for x in p.glob('*.jpg') if not x.is_dir()])
+        jpgfiles = [x for x in p.glob('*.jpg') if not x.is_dir()]
+        print('found {} files in {}'.format(len(jpgfiles), directory))
+        jpgfile = jpgfiles[0]
+        print('tags of {}: {}'.format(jpgfile, exif_handler.get_zoom_value(jpgfile)))
+
     else:
         # TODO throw Exception?
         print('"' + directory + '" could not be found')
