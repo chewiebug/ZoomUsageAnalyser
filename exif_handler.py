@@ -12,6 +12,7 @@ EXIF_FOCAL_LENGTH = ExifKeyMapping('EXIF FocalLength', 'exif_focal_length', str)
 EXIF_FOCAL_LENGTH_IN_35MM_FILM = ExifKeyMapping('EXIF FocalLengthIn35mmFilm', 'exif_focal_length_in_35mm_film', int)
 
 ImageInfo = collections.namedtuple('ImageInfo', [
+    'filename',
     IMAGE_MODEL.python_key,
     EXIF_ISO_SPEED_RATINGS.python_key,
     EXIF_FOCAL_LENGTH.python_key,
@@ -22,6 +23,7 @@ ImageInfo = collections.namedtuple('ImageInfo', [
 def get_zoom_value(jpgfile: Path):
     tags = __get_exif_tags__(jpgfile)
     return ImageInfo(
+        jpgfile.absolute(),
         __create_exif_element__(tags, IMAGE_MODEL),
         __create_exif_element__(tags, EXIF_ISO_SPEED_RATINGS),
         __create_exif_element__(tags, EXIF_FOCAL_LENGTH),
