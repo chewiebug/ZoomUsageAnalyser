@@ -1,20 +1,10 @@
 import argparse
+import collections
 from pathlib import Path
 
 import exif_handler
 
-
-class CliArgs(object):
-    """ Contains all properties parsed from cli """
-    def __init__(self):
-        self.__directory = 'missing'
-
-    @property
-    def get_directory(self):
-        return self.__directory
-
-    def __repr__(self):
-        return type(self).__name__ + '(directory={})'.format(self.directory)
+CliArgs = collections.namedtuple('CliArgs', 'directory')
 
 
 def parse_args() -> CliArgs:
@@ -22,9 +12,8 @@ def parse_args() -> CliArgs:
     parser.add_argument('-d', '--directory',
                         required=True,
                         help='relative or absolute path to directory containing photos')
-
-    cli_args = CliArgs()
-    return parser.parse_args(namespace=cli_args)
+    parse_result = parser.parse_args()
+    return CliArgs(parse_result.directory)
 
 
 def traverse_directory(directory: str):
@@ -32,9 +21,8 @@ def traverse_directory(directory: str):
     if p.exists():
         jpgfiles = [x for x in p.glob('*.jpg') if not x.is_dir()]
         print('found {} files in {}'.format(len(jpgfiles), directory))
-        jpgfile = jpgfiles[0]
-        print('tags of {}: {}'.format(jpgfile, exif_handler.get_zoom_value(jpgfile)))
-
+        for jpgfile in jpgfiles:
+            print('tags of {}: {}'.format(jpgfile, exif_handler.get_zoom_value(jpgfile)))
     else:
         # TODO throw Exception?
         print('"' + directory + '" could not be found')
